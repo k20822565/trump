@@ -104,6 +104,15 @@ function joinRoom(roomId) {
 function enterRoom(roomId) {
   document.getElementById('lobby-panel').style.display = 'none';
   document.getElementById('game-overlay').style.display = 'flex';
+  clearChat();
+  appendChatMessage({ system: true, msg: '채팅방에 입장했습니다.' });
+
+  // 채팅 Enter 키 전송
+  const input = document.getElementById('chat-input');
+  if (input && !input._bound) {
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') sendChat(); });
+    input._bound = true;
+  }
 }
 
 function leaveRoom() {
@@ -114,6 +123,7 @@ function leaveRoom() {
   document.getElementById('lobby-panel').style.display = 'flex';
   document.getElementById('game-content').innerHTML = '';
   hideResultOverlay();
+  clearChat();
 }
 
 function escHtml(str) {

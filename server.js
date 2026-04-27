@@ -193,6 +193,19 @@ io.on('connection', (socket) => {
     if (result.ok) broadcastGameState(room.id);
   });
 
+  // ── 채팅 ──
+  socket.on('chat:send', ({ msg }) => {
+    const player = players[socket.id];
+    if (!player?.roomId) return;
+    const text = String(msg).trim().slice(0, 200);
+    if (!text) return;
+    io.to(player.roomId).emit('chat:message', {
+      nickname: player.nickname,
+      msg: text,
+      time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
+    });
+  });
+
   // ── 구걸 시스템 ──
   socket.on('begChips', ({ targetId, amount }, cb) => {
     const player = players[socket.id];

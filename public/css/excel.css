@@ -334,12 +334,111 @@ body {
 }
 .game-icon-btn:hover { background: rgba(255,255,255,0.35); }
 
+/* ── 게임+채팅 분할 레이아웃 ─────────────────────────────── */
+#game-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
 /* ── 게임 콘텐츠 ─────────────────────────────────────────── */
 #game-content {
   flex: 1;
   overflow: auto;
   padding: 8px;
+  min-width: 0;
 }
+
+/* ── 채팅 패널 ────────────────────────────────────────────── */
+#chat-panel {
+  width: 170px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #d0d0d0;
+  background: #fafafa;
+}
+
+#chat-header {
+  background: #e8f4ec;
+  color: #217346;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 6px;
+  border-bottom: 1px solid #c3d9c9;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+
+#chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 10px;
+}
+
+#chat-messages::-webkit-scrollbar { width: 4px; }
+#chat-messages::-webkit-scrollbar-thumb { background: #c3d9c9; border-radius: 2px; }
+
+.chat-msg {
+  word-break: break-all;
+  line-height: 1.4;
+}
+.chat-msg .chat-nick {
+  font-weight: 700;
+  color: #217346;
+}
+.chat-msg .chat-nick.me {
+  color: #5b9bd5;
+}
+.chat-msg .chat-time {
+  color: #bbb;
+  font-size: 9px;
+  margin-left: 2px;
+}
+.chat-msg .chat-text {
+  color: #333;
+  display: block;
+  padding-left: 2px;
+}
+.chat-msg.system .chat-text {
+  color: #999;
+  font-style: italic;
+}
+
+#chat-input-row {
+  display: flex;
+  border-top: 1px solid #d0d0d0;
+  flex-shrink: 0;
+}
+#chat-input {
+  flex: 1;
+  height: 24px;
+  border: none;
+  border-right: 1px solid #d0d0d0;
+  padding: 0 4px;
+  font-size: 10px;
+  font-family: inherit;
+  outline: none;
+  background: #fff;
+  min-width: 0;
+}
+#chat-input:focus { background: #f0f7f3; }
+#chat-send-btn {
+  width: 32px;
+  height: 24px;
+  border: none;
+  background: #217346;
+  color: #fff;
+  font-size: 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+#chat-send-btn:hover { background: #1a5c38; }
 
 /* ── 긴급 숨김 ────────────────────────────────────────────── */
 body.hidden-mode #game-overlay { display: none !important; }

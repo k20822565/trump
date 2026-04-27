@@ -28,13 +28,32 @@ socket.on('roomList', (rooms) => {
 });
 
 socket.on('roomUpdate', (roomState) => {
+  const prev = currentRoom;
   currentRoom = roomState;
   renderWaitingRoom(roomState);
+
+  // 입장/퇴장 시스템 메시지
+  if (prev) {
+    const prevIds = new Set(prev.players.map(p => p.id));
+    const currIds = new Set(roomState.players.map(p => p.id));
+    roomState.players.forEach(p => {
+      if (!prevIds.has(p.id) && p.id !== myId) {
+        appendChatMessage({ system: true, msg: `${p.nickname}님이 입장했습니다.` });
+      }
+    });
+    prev.players.forEach(p => {
+      if (!currIds.has(p.id)) {
+        appendChatMessage({ system: true, msg: `${p.nickname}님이 퇴장했습니다.` });
+      }
+    });
+  }
 });
 
 socket.on('gameStarted', ({ gameType }) => {
   hideResultOverlay();
   renderGameArea(gameType);
+  const names = { onecard: '원카드', poker: '텍사스 홀덤', seotda: '섯다' };
+  appendChatMessage({ system: true, msg: `--- ${names[gameType] || gameType} 게임 시작! ---` });
 });
 
 socket.on('gameState', (state) => {
@@ -44,6 +63,11 @@ socket.on('gameState', (state) => {
 
 socket.on('gameOver', (result) => {
   showResultOverlay(result);
+  if (result.winner || result.winners) {
+    const winnerId = result.winner || result.winners?.[0];
+    const winnerName = currentRoom?.players?.find(p => p.id === winnerId)?.nickname || '?';
+    appendChatMessage({ system: true, msg: `--- 게임 종료! 승자: ${winnerName} ---` });
+  }
 });
 
 socket.on('gameAborted', ({ msg }) => {
@@ -78,6 +102,10 @@ socket.on('chipsUpdate', ({ chips }) => {
     const me = currentRoom.players?.find(p => p.id === myId);
     if (me) me.chips = chips;
   }
+});
+
+socket.on('chat:message', ({ nickname, msg, time }) => {
+  appendChatMessage({ nickname, msg, time });
 });
 
 // ── 유틸 ──────────────────────────────────────────────────
@@ -122,6 +150,49 @@ function submitBeg() {
     if (res?.ok) { showToast('구걸 요청을 보냈습니다.'); closeBegPanel(); }
     else showToast(res?.msg || '요청 실패');
   });
+}
+
+// ── 채팅 ──────────────────────────────────────────────────
+function appendChatMessage({ nickname, msg, time, system }) {
+  const box = document.getElementById('chat-messages');
+  if (!box) return;
+
+  const el = document.createElement('div');
+  el.className = 'chat-msg' + (system ? ' system' : '');
+
+  if (system) {
+    el.innerHTML = `<span class="chat-text">${escChatHtml(msg)}</span>`;
+  } else {
+    const isMe = nickname === localStorage.getItem('nickname');
+    el.innerHTML = `<span class="chat-nick ${isMe ? 'me' : ''}">${escChatHtml(nickname)}</span>`
+      + `<span class="chat-time">${time}</span>`
+      + `<span class="chat-text">${escChatHtml(msg)}</span>`;
+  }
+
+  box.appendChild(el);
+  box.scrollTop = box.scrollHeight;
+}
+
+function sendChat() {
+  const input = document.getElementById('chat-input');
+  if (!input) return;
+  const msg = input.value.trim();
+  if (!msg) return;
+  socket.emit('chat:send', { msg });
+  input.value = '';
+  input.focus();
+}
+
+function clearChat() {
+  const box = document.getElementById('chat-messages');
+  if (box) box.innerHTML = '';
+}
+
+function escChatHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 // 긴급 숨김

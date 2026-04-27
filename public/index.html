@@ -109,15 +109,27 @@
     </div>
 
     <!-- 게임 오버레이 (대기실 + 게임) -->
-    <div id="game-overlay" style="display:none; top:40px; left:120px; width:580px; height:400px;">
+    <div id="game-overlay" style="display:none; top:40px; left:80px; width:720px; height:420px;">
       <div id="game-header">
         <span class="game-title" id="game-overlay-title">게임 방</span>
         <div class="game-actions">
           <span class="game-icon-btn" onclick="leaveRoom()" title="방 나가기">✕ 나가기</span>
         </div>
       </div>
-      <div id="game-content">
-        <!-- 대기실 또는 게임 UI가 여기에 렌더링됨 -->
+      <!-- 게임+채팅 분할 레이아웃 -->
+      <div id="game-body">
+        <div id="game-content">
+          <!-- 대기실 또는 게임 UI가 여기에 렌더링됨 -->
+        </div>
+        <!-- 채팅 패널 -->
+        <div id="chat-panel">
+          <div id="chat-header">채팅</div>
+          <div id="chat-messages"></div>
+          <div id="chat-input-row">
+            <input type="text" id="chat-input" placeholder="메시지 입력..." maxlength="200" autocomplete="off">
+            <button id="chat-send-btn" onclick="sendChat()">전송</button>
+          </div>
+        </div>
       </div>
       <!-- 결과 오버레이 -->
       <div class="result-overlay hidden" id="result-overlay"></div>
