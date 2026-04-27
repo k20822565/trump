@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>통합 문서1 - Microsoft Excel</title>
+<link rel="stylesheet" href="css/excel.css">
+<link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+
+<!-- 타이틀바 -->
+<div id="title-bar">
+  통합 문서1 - Microsoft Excel
+  <div class="win-controls">
+    <div class="win-btn">─</div>
+    <div class="win-btn">□</div>
+    <div class="win-btn close">✕</div>
+  </div>
+</div>
+
+<!-- 리본 탭 -->
+<div id="ribbon-tabs">
+  <div class="ribbon-tab active">홈</div>
+  <div class="ribbon-tab">삽입</div>
+  <div class="ribbon-tab">페이지 레이아웃</div>
+  <div class="ribbon-tab">수식</div>
+  <div class="ribbon-tab">데이터</div>
+  <div class="ribbon-tab">검토</div>
+  <div class="ribbon-tab">보기</div>
+</div>
+
+<!-- 리본 바디 -->
+<div id="ribbon-body">
+  <div class="ribbon-group">
+    <div class="ribbon-btn"><span class="icon">📋</span>붙여넣기</div>
+    <div class="ribbon-group-label">클립보드</div>
+  </div>
+  <div class="ribbon-group">
+    <div class="ribbon-row">
+      <div class="ribbon-btn"><span class="icon">B</span></div>
+      <div class="ribbon-btn"><span class="icon">I</span></div>
+      <div class="ribbon-btn"><span class="icon">U</span></div>
+    </div>
+    <div class="ribbon-row">
+      <div class="ribbon-btn"><span class="icon">≡</span></div>
+      <div class="ribbon-btn"><span class="icon">≡</span></div>
+      <div class="ribbon-btn"><span class="icon">≡</span></div>
+    </div>
+    <div class="ribbon-group-label">글꼴</div>
+  </div>
+  <div class="ribbon-group">
+    <div class="ribbon-row">
+      <div class="ribbon-btn"><span class="icon">⬛</span>조건부 서식</div>
+    </div>
+    <div class="ribbon-row">
+      <div class="ribbon-btn"><span class="icon">⊞</span>표 서식</div>
+    </div>
+    <div class="ribbon-group-label">스타일</div>
+  </div>
+  <div class="ribbon-group">
+    <div class="ribbon-btn"><span class="icon">Σ</span>자동 합계</div>
+    <div class="ribbon-group-label">편집</div>
+  </div>
+</div>
+
+<!-- 수식 입력줄 -->
+<div id="formula-bar">
+  <div id="cell-ref">B4</div>
+  <div id="formula-icon">fx</div>
+  <div id="formula-input">=SUMIF(D2:D50,"완료",E2:E50)</div>
+</div>
+
+<!-- 시트 영역 -->
+<div id="sheet-area">
+  <div id="row-header" id="row-header"></div>
+  <div id="sheet-scroll">
+    <div id="sheet-grid">
+      <div id="col-header-row"></div>
+      <!-- 가짜 스프레드시트 데이터 -->
+      <div id="fake-sheet"></div>
+    </div>
+
+    <!-- 로비 오버레이 -->
+    <div id="lobby-panel">
+      <div id="lobby-toolbar">
+        <span>닉네임:</span>
+        <span class="nickname-display" id="my-nickname">-</span>
+        <button class="btn btn-primary" onclick="openCreateRoom()">방 만들기</button>
+        <button class="btn btn-default" onclick="refreshRooms()">새로고침</button>
+        <span style="margin-left:auto; color:#888;">ESC: 화면 전환</span>
+      </div>
+      <div id="room-table-wrap">
+        <table id="room-table">
+          <thead>
+            <tr>
+              <th style="width:160px">방 제목</th>
+              <th style="width:90px">게임</th>
+              <th style="width:70px">인원</th>
+              <th style="width:60px">상태</th>
+              <th style="width:60px"></th>
+            </tr>
+          </thead>
+          <tbody id="room-list-body">
+            <tr><td colspan="5" id="empty-msg">방이 없습니다. 방을 만들어 시작하세요!</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 게임 오버레이 (대기실 + 게임) -->
+    <div id="game-overlay" style="display:none; top:40px; left:120px; width:580px; height:400px;">
+      <div id="game-header">
+        <span class="game-title" id="game-overlay-title">게임 방</span>
+        <div class="game-actions">
+          <span class="game-icon-btn" onclick="leaveRoom()" title="방 나가기">✕ 나가기</span>
+        </div>
+      </div>
+      <div id="game-content">
+        <!-- 대기실 또는 게임 UI가 여기에 렌더링됨 -->
+      </div>
+      <!-- 결과 오버레이 -->
+      <div class="result-overlay hidden" id="result-overlay"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 하단 탭바 -->
+<div id="sheet-tab-bar">
+  <div class="sheet-tab active">Sheet1</div>
+  <div class="sheet-tab">Sheet2</div>
+  <div class="sheet-tab">Sheet3</div>
+  <div style="margin-left:8px; font-size:16px; cursor:pointer; color:#888;">+</div>
+</div>
+<div id="status-bar">
+  <span>준비</span>
+  <div class="status-right">
+    <span>평균: 3,842,150</span>
+    <span>개수: 24</span>
+    <span>합계: 92,211,600</span>
+    <div class="zoom-ctrl">
+      <span>─</span>
+      <input type="range" class="zoom-slider" min="60" max="200" value="100">
+      <span>+</span>
+      <span>100%</span>
+    </div>
+  </div>
+</div>
+
+<!-- 닉네임 입력 모달 -->
+<div class="modal-backdrop" id="nickname-modal">
+  <div class="modal">
+    <div class="modal-title">사용자 설정 <span class="modal-close">✕</span></div>
+    <div class="modal-body">
+      <div class="modal-row">
+        <label>닉네임을 입력하세요 (최대 12자)</label>
+        <input type="text" id="nickname-input" maxlength="12" placeholder="닉네임" autofocus>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="submitNickname()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 방 만들기 모달 -->
+<div class="modal-backdrop hidden" id="create-room-modal">
+  <div class="modal">
+    <div class="modal-title">방 만들기 <span class="modal-close" onclick="closeCreateRoom()">✕</span></div>
+    <div class="modal-body">
+      <div class="modal-row">
+        <label>방 제목</label>
+        <input type="text" id="room-title-input" maxlength="20" placeholder="방 이름 (선택)">
+      </div>
+      <div class="modal-row">
+        <label>게임 종류</label>
+        <select id="room-game-select">
+          <option value="onecard">원카드</option>
+          <option value="poker">텍사스 홀덤</option>
+          <option value="seotda">섯다</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default" onclick="closeCreateRoom()">취소</button>
+      <button class="btn btn-primary" onclick="submitCreateRoom()">만들기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 구걸 수신 알림 -->
+<div class="beg-toast hidden" id="beg-toast">
+  <div class="beg-toast-title">칩 요청</div>
+  <div id="beg-toast-msg"></div>
+  <div class="beg-toast-actions">
+    <button class="btn btn-primary" onclick="respondBeg(true)">수락</button>
+    <button class="btn btn-default" onclick="respondBeg(false)">거절</button>
+  </div>
+</div>
+
+<!-- 와일드카드 색 선택 -->
+<div id="color-picker" class="hidden">
+  <div class="color-picker-box">
+    <div class="cp-title">무늬 선택</div>
+    <div class="cp-btn" onclick="pickColor('♠')">♠ 스페이드</div>
+    <div class="cp-btn" onclick="pickColor('♥')">♥ 하트</div>
+    <div class="cp-btn" onclick="pickColor('♦')">♦ 다이아</div>
+    <div class="cp-btn" onclick="pickColor('♣')">♣ 클럽</div>
+  </div>
+</div>
+
+<!-- 구걸 패널 -->
+<div id="beg-panel" class="hidden">
+  <div class="modal" style="width:300px">
+    <div class="modal-title">칩 구걸하기 <span class="modal-close" onclick="closeBegPanel()">✕</span></div>
+    <div class="modal-body">
+      <div class="modal-row">
+        <label>요청할 플레이어</label>
+        <select id="beg-target-select"></select>
+      </div>
+      <div class="modal-row">
+        <label>요청 칩 수</label>
+        <input type="number" id="beg-amount-input" min="1" value="5">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default" onclick="closeBegPanel()">취소</button>
+      <button class="btn btn-primary" onclick="submitBeg()">요청</button>
+    </div>
+  </div>
+</div>
+
+<!-- 토스트 컨테이너 -->
+<div id="toast-container"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/excel-sheet.js"></script>
+<script src="js/socket-client.js"></script>
+<script src="js/games/onecard.js"></script>
+<script src="js/games/poker.js"></script>
+<script src="js/games/seotda.js"></script>
+<script src="js/room.js"></script>
+<script src="js/lobby.js"></script>
+</body>
+</html>

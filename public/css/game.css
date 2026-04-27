@@ -1,0 +1,50 @@
+/* 게임 전용 추가 스타일 */
+
+/* 원카드 특수카드 강조 */
+.card[data-rank="A"] { border-color: #ffd700; box-shadow: 0 0 4px #ffd700; }
+.card[data-rank="2"] { border-color: #5b9bd5; }
+.card[data-rank="J"] { border-color: #c00; }
+.card[data-rank="Q"] { border-color: #9c27b0; }
+
+/* 섯다 패 강조 */
+.hwatu-card.amhaengosa { border-color: #ffd700; box-shadow: 0 0 6px #ffd700; }
+.hwatu-card.ddaeng { border-color: #c00; box-shadow: 0 0 6px rgba(192,0,0,0.4); }
+
+/* 포커 핸드 강도 색상 */
+.hand-rank-high { color: #217346; font-weight: 700; }
+.hand-rank-low { color: #888; }
+
+/* 올인 배지 */
+.allin-badge {
+  background: #c00;
+  color: #fff;
+  font-size: 9px;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+/* 블라인드 표시 */
+.blind-badge {
+  font-size: 9px;
+  padding: 1px 4px;
+  border-radius: 2px;
+  background: #217346;
+  color: #fff;
+}
+
+/* 턴 화살표 깜빡임 */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.active-turn { animation: blink 1s ease-in-out infinite; }
+
+/* 드로우 누적 표시 */
+.pending-draw-badge {
+  background: #c00;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
