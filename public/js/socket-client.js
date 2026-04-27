@@ -1,5 +1,5 @@
 // Socket.io 클라이언트 + 공통 이벤트 처리
-const socket = io();
+const socket = io({ transports: ['websocket', 'polling'] });
 
 let myId = null;
 let currentRoom = null;
@@ -7,7 +7,21 @@ let currentGameState = null;
 let pendingBegFrom = null;
 let pendingBegAmount = 0;
 
-socket.on('connect', () => { myId = socket.id; });
+socket.on('connect', () => {
+  myId = socket.id;
+  document.getElementById('conn-status').style.display = 'none';
+  if (typeof onSocketConnect === 'function') onSocketConnect();
+});
+
+socket.on('connect_error', () => {
+  document.getElementById('conn-status').textContent = '서버 연결 실패. 새로고침 해주세요.';
+  document.getElementById('conn-status').style.background = '#c00';
+});
+
+socket.on('disconnect', () => {
+  document.getElementById('conn-status').textContent = '연결 끊김. 재연결 중...';
+  document.getElementById('conn-status').style.display = 'block';
+});
 
 socket.on('roomList', (rooms) => {
   updateRoomList(rooms);

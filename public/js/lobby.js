@@ -1,14 +1,6 @@
 // 로비 — 닉네임, 방 목록, 방 생성/입장
 
 window.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem('nickname');
-  if (saved) {
-    submitNicknameValue(saved);
-  } else {
-    document.getElementById('nickname-modal').style.display = 'flex';
-    document.getElementById('nickname-input').focus();
-  }
-
   document.getElementById('nickname-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') submitNickname();
   });
@@ -16,6 +8,17 @@ window.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Enter') submitCreateRoom();
   });
 });
+
+// 소켓 연결 완료 후 호출됨 (socket-client.js의 connect 핸들러에서 호출)
+function onSocketConnect() {
+  const saved = localStorage.getItem('nickname');
+  if (saved) {
+    submitNicknameValue(saved);
+  } else {
+    document.getElementById('nickname-modal').style.display = 'flex';
+    document.getElementById('nickname-input').focus();
+  }
+}
 
 function submitNickname() {
   const val = document.getElementById('nickname-input').value.trim();

@@ -233,6 +233,21 @@
 <!-- 토스트 컨테이너 -->
 <div id="toast-container"></div>
 
+<!-- 연결 상태 표시 -->
+<div id="conn-status" style="
+  display:block;
+  position:fixed;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  background:#217346;color:#fff;
+  padding:16px 28px;
+  font-size:13px;font-family:Calibri,sans-serif;
+  border-radius:2px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.3);
+  z-index:9999;
+  text-align:center;
+">서버에 연결 중입니다...<br><small style="opacity:0.8">(처음 접속 시 최대 30초 소요)</small></div>
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="js/excel-sheet.js"></script>
 <script src="js/socket-client.js"></script>
