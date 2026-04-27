@@ -440,6 +440,17 @@ body {
 }
 #chat-send-btn:hover { background: #1a5c38; }
 
+/* ── 관전자 배너 ──────────────────────────────────────────── */
+.spectator-banner {
+  background: #fff3cd;
+  color: #856404;
+  padding: 4px 8px;
+  font-size: 11px;
+  border-bottom: 1px solid #ffc107;
+  text-align: center;
+  flex-shrink: 0;
+}
+
 /* ── 긴급 숨김 ────────────────────────────────────────────── */
 body.hidden-mode #game-overlay { display: none !important; }
 

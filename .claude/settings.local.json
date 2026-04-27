@@ -5,7 +5,16 @@
       "Bash(node server.js)",
       "Bash(curl -s http://localhost:3000)",
       "Bash(pkill -f \"node server.js\")",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(node -e \"require\\('./server.js'\\)\")",
+      "Bash(node --check server.js)",
+      "Bash(node --check game/onecard.js)",
+      "Bash(node --check game/poker.js)",
+      "Bash(node --check game/seotda.js)"
     ]
   }
 }

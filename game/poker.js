@@ -329,6 +329,52 @@ exports.getStateFor = function(game, playerId) {
   };
 };
 
+exports.removePlayer = function(game, playerId) {
+  const ps = game.playerState[playerId];
+  if (!ps || ps.folded) return { finished: game.finished };
+
+  const wasTurn = game.players[game.turnIndex] === playerId;
+  ps.folded = true;
+
+  const active = activePlayers(game);
+  if (active.length <= 1) {
+    resolveGame(game);
+    return { finished: true };
+  }
+
+  if (wasTurn) {
+    game.actionCount++;
+    advanceStage(game);
+  }
+
+  return { finished: game.finished };
+};
+
+exports.getSpectatorState = function(game) {
+  const ps = game.playerState;
+  return {
+    gameType: 'poker',
+    myCards: [],
+    community: game.community,
+    pot: game.pot,
+    stage: game.stage,
+    currentBet: game.currentBet,
+    currentTurn: game.players[game.turnIndex],
+    players: game.players.map(id => ({
+      id,
+      nickname: ps[id].nickname,
+      chips: ps[id].chips,
+      bet: ps[id].bet,
+      totalBet: ps[id].totalBet,
+      folded: ps[id].folded,
+      allin: ps[id].allin,
+      cardCount: ps[id].holeCards?.length || 0,
+    })),
+    finished: game.finished,
+    result: game.result,
+  };
+};
+
 exports.getResult = function(game) {
   return {
     gameType: 'poker',

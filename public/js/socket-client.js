@@ -108,6 +108,40 @@ socket.on('chat:message', ({ nickname, msg, time }) => {
   appendChatMessage({ nickname, msg, time });
 });
 
+socket.on('roomToast', ({ msg }) => {
+  showToast(msg);
+});
+
+socket.on('afkWarning', ({ secondsLeft }) => {
+  showToast(`⏰ ${secondsLeft}초 안에 행동하지 않으면 자동 처리됩니다!`, 5000);
+});
+
+socket.on('autoNextRound', ({ countdown }) => {
+  const el = document.getElementById('countdown-num');
+  if (el) el.textContent = countdown;
+});
+
+socket.on('gameChampion', ({ championName }) => {
+  const overlay = document.getElementById('result-overlay');
+  overlay.classList.remove('hidden');
+  overlay.innerHTML = `
+    <div class="result-title">🏆 최종 승자!</div>
+    <div class="result-sub" style="margin:8px 0">
+      ${championName ? `<b>${championName}</b>님이 모든 칩을 차지했습니다!` : '모든 플레이어가 파산했습니다.'}
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-default" onclick="backToLobbyBtn()">대기실로</button>
+      <button class="btn btn-danger" onclick="leaveRoom()">나가기</button>
+    </div>
+  `;
+  appendChatMessage({ system: true, msg: `🏆 최종 승자: ${championName || '없음'}` });
+});
+
+socket.on('spectatorJoined', ({ gameType, roomState }) => {
+  currentRoom = roomState;
+  renderGameArea(gameType);
+});
+
 // ── 유틸 ──────────────────────────────────────────────────
 function showToast(msg, duration = 2500) {
   const container = document.getElementById('toast-container');

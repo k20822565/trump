@@ -243,6 +243,54 @@ exports.getStateFor = function(game, playerId) {
   };
 };
 
+exports.removePlayer = function(game, playerId) {
+  const ps = game.playerState[playerId];
+  if (!ps || ps.folded) return { finished: game.finished };
+
+  const wasTurn = game.players[game.turnIndex] === playerId;
+  ps.folded = true;
+
+  const active = game.players.filter(id => !game.playerState[id].folded);
+  if (active.length <= 1) {
+    resolveGame(game);
+    return { finished: true };
+  }
+
+  if (wasTurn) {
+    game.actionCount++;
+    const allCalled = active.every(id =>
+      game.playerState[id].bet >= game.currentBet || game.playerState[id].chips === 0
+    );
+    if (allCalled && game.actionCount >= active.length) {
+      resolveGame(game);
+    } else {
+      nextTurn(game);
+    }
+  }
+
+  return { finished: game.finished };
+};
+
+exports.getSpectatorState = function(game) {
+  const ps = game.playerState;
+  return {
+    gameType: 'seotda',
+    myHand: [],
+    pot: game.pot,
+    currentBet: game.currentBet,
+    currentTurn: game.players[game.turnIndex],
+    players: game.players.map(id => ({
+      id,
+      nickname: ps[id].nickname,
+      chips: ps[id].chips,
+      bet: ps[id].bet,
+      folded: ps[id].folded,
+    })),
+    finished: game.finished,
+    result: game.result,
+  };
+};
+
 exports.getResult = function(game) {
   return {
     gameType: 'seotda',

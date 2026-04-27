@@ -56,14 +56,19 @@ function updateRoomList(rooms) {
 
   rooms.forEach(room => {
     const tr = document.createElement('tr');
-    tr.className = room.status === 'playing' ? 'playing' : '';
-    const canJoin = room.status === 'waiting' && room.playerCount < room.maxPlayers;
+    const isPlaying = room.status === 'playing';
+    tr.className = isPlaying ? 'playing' : '';
+    const canJoin = !isPlaying && room.playerCount < room.maxPlayers;
+    const canWatch = isPlaying;
+    const btnLabel = canJoin ? '입장' : canWatch ? '관전' : '꽉참';
+    const btnDisabled = !canJoin && !canWatch;
+    const spectInfo = room.spectatorCount > 0 ? ` <span style="color:#888">(관전:${room.spectatorCount})</span>` : '';
     tr.innerHTML = `
       <td>${escHtml(room.title)}</td>
       <td>${gameNames[room.gameType] || room.gameType}</td>
-      <td>${room.playerCount} / ${room.maxPlayers}</td>
-      <td>${room.status === 'playing' ? '게임중' : '대기중'}</td>
-      <td><button class="join-btn" onclick="joinRoom('${room.id}')" ${canJoin ? '' : 'disabled'}>입장</button></td>
+      <td>${room.playerCount}/${room.maxPlayers}${spectInfo}</td>
+      <td>${isPlaying ? '게임중' : '대기중'}</td>
+      <td><button class="join-btn" onclick="joinRoom('${room.id}')" ${btnDisabled ? 'disabled' : ''}>${btnLabel}</button></td>
     `;
     tbody.appendChild(tr);
   });
@@ -94,18 +99,18 @@ function submitCreateRoom() {
 function joinRoom(roomId) {
   socket.emit('joinRoom', { roomId }, (res) => {
     if (res.ok) {
-      enterRoom(res.roomId);
+      enterRoom(res.roomId, res.spectator);
     } else {
       showToast(res.msg || '입장 실패');
     }
   });
 }
 
-function enterRoom(roomId) {
+function enterRoom(roomId, isSpectator) {
   document.getElementById('lobby-panel').style.display = 'none';
   document.getElementById('game-overlay').style.display = 'flex';
   clearChat();
-  appendChatMessage({ system: true, msg: '채팅방에 입장했습니다.' });
+  appendChatMessage({ system: true, msg: isSpectator ? '👁 관전으로 입장했습니다.' : '채팅방에 입장했습니다.' });
 
   // 채팅 Enter 키 전송
   const input = document.getElementById('chat-input');

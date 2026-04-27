@@ -161,6 +161,53 @@ exports.getStateFor = function(game, playerId) {
   };
 };
 
+exports.removePlayer = function(game, playerId) {
+  const idx = game.players.indexOf(playerId);
+  if (idx === -1) return { finished: game.finished };
+
+  if (game.hands[playerId]) {
+    game.deck.push(...game.hands[playerId]);
+    delete game.hands[playerId];
+  }
+
+  const wasTurn = game.players[game.turnIndex] === playerId;
+  game.players.splice(idx, 1);
+
+  if (game.players.length < 2) {
+    game.finished = true;
+    game.winner = game.players[0] || null;
+    if (game.winner) game.scores[game.winner] = (game.scores[game.winner] || 0) + 1;
+    return { finished: true };
+  }
+
+  if (wasTurn) {
+    game.turnIndex = game.turnIndex % game.players.length;
+  } else if (idx < game.turnIndex) {
+    game.turnIndex = Math.max(0, game.turnIndex - 1);
+  }
+
+  return { finished: false };
+};
+
+exports.getSpectatorState = function(game) {
+  const top = game.discard[game.discard.length - 1];
+  return {
+    gameType: 'onecard',
+    myHand: [],
+    topCard: top,
+    currentColor: game.currentColor,
+    currentTurn: game.players[game.turnIndex],
+    pendingDraw: game.pendingDraw,
+    direction: game.direction,
+    handCounts: Object.fromEntries(game.players.map(id => [id, game.hands[id]?.length ?? 0])),
+    nicknames: game.nicknames,
+    players: game.players,
+    finished: game.finished,
+    winner: game.winner,
+    scores: game.scores,
+  };
+};
+
 exports.getResult = function(game) {
   return {
     gameType: 'onecard',
